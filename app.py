@@ -1,6 +1,7 @@
 import os
 from functools import reduce
-from tempfile import NamedTemporaryFile
+from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from gtts import gTTS
 from flask import abort, request, Flask
 from pydub import AudioSegment
@@ -70,9 +71,10 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def send_song(message):
-    with NamedTemporaryFile(suffix='.mp3') as f:
-        make_song(message.text, f.name)
-        bot.send_audio(audio=open(f.name, 'rb'), chat_id=message[-1].chat.id)
+    with TemporaryDirectory() as temp_dir:
+        song_path = str(Path(temp_dir) / 'частушка.mp3')
+        make_song(message.text, song_path)
+        bot.send_audio(audio=open(song_path, 'rb'), chat_id=message.chat.id)
 
 
 @app.route('/', methods=['GET', 'HEAD'])
