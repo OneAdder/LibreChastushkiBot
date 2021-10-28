@@ -65,14 +65,14 @@ def make_song(text: str, output_path: str):
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(message, "Частушки, бесплатно без СМ и регистрации. Нужно скинуть текст")
+    bot.reply_to(message, "Частушки, бесплатно без СМС и регистрации. Нужно скинуть текст")
 
 
 @bot.message_handler(func=lambda message: True)
 def send_song(message):
     with NamedTemporaryFile(suffix='.mp3') as f:
         make_song(message.text, f.name)
-        bot.send_audio(audio=f.name, chat_id=message.chat_id)
+        bot.send_audio(audio=open(f.name, 'rb'), chat_id=message[-1].chat.id)
 
 
 @app.route('/', methods=['GET', 'HEAD'])
